@@ -4,4 +4,4 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 
 ## Features
 
-- use (recommended)[https://github.com/tsconfig/bases#node-10-tsconfigjson] tsconfig for node17
+- use [recommended](https://github.com/tsconfig/bases/blob/main/bases/node17.json) tsconfig for node17
