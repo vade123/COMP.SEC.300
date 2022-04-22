@@ -1,14 +1,13 @@
 import 'dotenv/config';
-import fastify from 'fastify';
+import fastify, { FastifyInstance } from 'fastify';
 import { AppDataSource } from './data-source';
+import { user } from './api/v1/user';
 
 AppDataSource.initialize()
   .then(async () => {
-    const server = fastify();
+    const server: FastifyInstance = fastify();
 
-    server.get('/ping', async (request, reply) => {
-      return 'pong\n';
-    });
+    server.register(user, { prefix: '/api/v1' });
 
     server.listen(parseInt(process.env.PORT!), (err, address) => {
       if (err) {
