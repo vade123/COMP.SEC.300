@@ -1,9 +1,9 @@
-import "reflect-metadata";
-import { DataSource } from "typeorm";
-import { User } from "./entity/User";
+import 'reflect-metadata';
+import { DataSource } from 'typeorm';
+import { User } from './entity/User';
 
 export const AppDataSource = new DataSource({
-  type: "mariadb",
+  type: 'mariadb',
   host: process.env.DB_HOST,
   port: parseInt(process.env.DB_PORT!),
   username: process.env.DB_USER,
@@ -15,3 +15,4 @@ export const AppDataSource = new DataSource({
   migrations: [],
   subscribers: [],
 });
+

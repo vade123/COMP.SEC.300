@@ -1,16 +1,16 @@
-import "dotenv/config";
-import fastify from "fastify";
-import { AppDataSource } from "./data-source";
+import 'dotenv/config';
+import fastify from 'fastify';
+import { AppDataSource } from './data-source';
 
 AppDataSource.initialize()
   .then(async () => {
     const server = fastify();
 
-    server.get("/ping", async (request, reply) => {
-      return "pong\n";
+    server.get('/ping', async (request, reply) => {
+      return 'pong\n';
     });
 
-    server.listen(8080, (err, address) => {
+    server.listen(parseInt(process.env.PORT!), (err, address) => {
       if (err) {
         console.error(err);
         process.exit(1);
@@ -18,4 +18,4 @@ AppDataSource.initialize()
       console.log(`Server listening at ${address}`);
     });
   })
-  .catch((e) => console.log(e));
+  .catch(e => console.log(e));
