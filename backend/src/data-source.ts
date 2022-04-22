@@ -16,3 +16,4 @@ export const AppDataSource = new DataSource({
   subscribers: [],
 });
 
+export const userRepository = AppDataSource.getRepository(User);

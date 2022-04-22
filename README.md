@@ -12,3 +12,6 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 ## Features
 
 - use [recommended](https://github.com/tsconfig/bases/blob/main/bases/node17.json) tsconfig for node17
+- use [TypeORM](https://typeorm.io) object-relational mapping tool
+  - No need to write SQL queries manually -> some protection against SQL injections
+  - No dependency to a single database provider

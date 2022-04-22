@@ -1,13 +1,17 @@
 import 'dotenv/config';
 import fastify, { FastifyInstance } from 'fastify';
 import { AppDataSource } from './data-source';
-import { user } from './api/v1/user';
+import routes from './api/v1';
 
 AppDataSource.initialize()
   .then(async () => {
     const server: FastifyInstance = fastify();
 
-    server.register(user, { prefix: '/api/v1' });
+    server.get('/health', {}, async (req, res) => {
+      return 'ok\n';
+    });
+
+    server.register(routes, { prefix: '/api/v1' });
 
     server.listen(parseInt(process.env.PORT!), (err, address) => {
       if (err) {
