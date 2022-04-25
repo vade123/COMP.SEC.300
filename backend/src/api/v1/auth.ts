@@ -12,6 +12,11 @@ interface userAttrs {
 
 const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
   fastify.post<{ Body: userAttrs }>('/register', {}, async (req, res) => {
+    const userExists = await userRepository.findOneBy({ username: req.body.username });
+    if (userExists) {
+      res.code(400).send({ error: 'username already taken' });
+    }
+
     const hash = await bcrypt.hash(req.body.password, 10);
 
     const user = new User();
