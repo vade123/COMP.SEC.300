@@ -11,7 +11,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       const user = await userRepository.findOneByOrFail({ id: req.params.id });
       res.send(user);
     } catch (err) {
-      res.code(404).send('Not found');
+      res.code(404).send({ error: 'Not found' });
     }
   });
 };
