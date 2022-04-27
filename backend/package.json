@@ -27,6 +27,8 @@
     "class-transformer": "^0.5.1",
     "dotenv": "^16.0.0",
     "fastify": "^3.27.4",
+    "joi": "^17.6.0",
+    "joi-password-complexity": "^5.1.0",
     "mysql": "^2.18.1",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.5"
