@@ -3,6 +3,8 @@ import fastify, { FastifyInstance } from 'fastify';
 import jwt from '@fastify/jwt';
 import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
+import csrf from 'fastify-csrf';
+import helmet from '@fastify/helmet';
 import { AppDataSource } from './data-source';
 import routes from './api/v1';
 
@@ -13,10 +15,11 @@ AppDataSource.initialize()
     const server: FastifyInstance = fastify();
     server
       .register(cors, {
-        origin: true,
+        origin: ['http://localhost'],
         methods: ['GET', 'POST'],
       })
       .register(cookie, { secret: SECRET })
+      .register(csrf, { cookieOpts: { signed: true } })
       .register(jwt, {
         secret: SECRET,
         cookie: {
@@ -24,11 +27,12 @@ AppDataSource.initialize()
           signed: false,
         },
       })
+      .register(helmet)
       .register(routes, { prefix: '/api/v1' })
-      .get('/health', {}, async (req, res) => {
+      .get('/health', {}, async () => {
         return 'ok\n';
       })
-      .listen(parseInt(process.env.PORT!), (err, address) => {
+      .listen(process.env.PORT!, (err, address) => {
         if (err) {
           console.error(err);
           process.exit(1);

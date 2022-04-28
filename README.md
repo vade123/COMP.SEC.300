@@ -17,8 +17,14 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 - enforce strong password requirements
 - use uuids instead of sequential ids
 - validate incoming request bodies
+- store token in httpOnly cookie
+- cors configuration
+- use csrf token
+- use helmet for security headers
 
 ## References
 
 - https://codahale.com/how-to-safely-store-a-password/
 - https://docs.microsoft.com/en-us/microsoft-365/admin/misc/password-policy-recommendations?view=o365-worldwide
+- https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
+- https://owasp.org/www-project-top-ten/

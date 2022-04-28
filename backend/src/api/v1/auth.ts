@@ -88,12 +88,15 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     }
 
     const token = fastify.jwt.sign(user?.toJSON()!);
+
+    await res.generateCsrf();
     res
       .setCookie('token', token, {
         domain: 'localhost',
         path: '/',
         secure: false,
         httpOnly: true,
+        sameSite: true,
       })
       .code(200)
       .send();
