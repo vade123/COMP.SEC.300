@@ -2,6 +2,7 @@ import 'dotenv/config';
 import fastify, { FastifyInstance } from 'fastify';
 import jwt from '@fastify/jwt';
 import cookie from '@fastify/cookie';
+import cors from '@fastify/cors';
 import { AppDataSource } from './data-source';
 import routes from './api/v1';
 
@@ -11,6 +12,10 @@ AppDataSource.initialize()
   .then(async () => {
     const server: FastifyInstance = fastify();
     server
+      .register(cors, {
+        origin: true,
+        methods: ['GET', 'POST'],
+      })
       .register(cookie, { secret: SECRET })
       .register(jwt, {
         secret: SECRET,
