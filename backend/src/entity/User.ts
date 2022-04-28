@@ -1,4 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Exclude, instanceToPlain } from 'class-transformer';
 
 export enum Role {
   USER = 'user',
@@ -16,7 +17,8 @@ export class User {
   @Column()
   email!: string;
 
-  @Column({ select: false })
+  @Exclude({ toPlainOnly: true })
+  @Column()
   passwordHash!: string;
 
   @Column({
@@ -30,5 +32,9 @@ export class User {
     default: '',
   })
   info!: string;
+
+  toJSON() {
+    return instanceToPlain(this);
+  }
 }
 

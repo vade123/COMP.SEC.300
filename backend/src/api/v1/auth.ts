@@ -5,13 +5,19 @@ import { User } from '../../entity/User';
 import Joi, { ObjectSchema } from 'joi';
 import passwordComplexity, { ComplexityOptions } from 'joi-password-complexity';
 import { FastifyRouteSchemaDef } from 'fastify/types/schema';
+import { useContainer } from 'typeorm';
 
-interface userAttrs {
+interface registerBody {
   username: string;
   password: string;
   passwordConfirm: string;
   email: string;
   info: string;
+}
+
+interface loginBody {
+  username: string;
+  password: string;
 }
 
 const passwordOpts: ComplexityOptions = {
@@ -23,7 +29,11 @@ const passwordOpts: ComplexityOptions = {
   symbol: 1,
 };
 
-const postOpts = {
+const validatorCompiler = ({ schema, method, url, httpPart }: FastifyRouteSchemaDef<ObjectSchema>) => {
+  return (data: registerBody) => Joi.assert(data, schema);
+};
+
+const registerOpts = {
   schema: {
     body: Joi.object()
       .keys({
@@ -36,14 +46,24 @@ const postOpts = {
       .with('password', 'passwordConfirm')
       .required(),
   },
-  validatorCompiler: ({ schema, method, url, httpPart }: FastifyRouteSchemaDef<ObjectSchema>) => {
-    return (data: userAttrs) => Joi.assert(data, schema);
+  validatorCompiler,
+};
+
+const loginOpts = {
+  schema: {
+    body: Joi.object()
+      .keys({
+        username: Joi.string().required(),
+        password: Joi.string().required(),
+      })
+      .required(),
   },
+  validatorCompiler,
 };
 
 const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
   //@ts-ignore Joi.ObjectSchema and FastifySchema do not match -> problem with Fastify typing, ignore
-  fastify.post<{ Body: userAttrs }>('/register', postOpts, async (req, res) => {
+  fastify.post<{ Body: registerBody }>('/register', registerOpts, async (req, res) => {
     const userExists = await userRepository.findOneBy({ username: req.body.username });
     if (userExists) {
       res.code(400).send({ error: 'username already taken' });
@@ -60,6 +80,19 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     const savedUser = await userRepository.save(user);
     const { passwordHash, ...omitHash } = savedUser;
     res.code(201).send(omitHash);
+  });
+
+  //@ts-ignore Joi.ObjectSchema and FastifySchema do not match -> problem with Fastify typing, ignore
+  fastify.post<{ Body: loginBody }>('/login', loginOpts, async (req, res) => {
+    const user = await userRepository.findOneBy({ username: req.body.username });
+    const passwordCorrect = !user ? false : await bcrypt.compare(req.body.password, user.passwordHash);
+
+    if (!(user && passwordCorrect)) {
+      res.code(401).send({ error: 'bad credentials' });
+    }
+
+    const token = fastify.jwt.sign(user!.toJSON());
+    res.code(200).send({ token: token });
   });
 };
 

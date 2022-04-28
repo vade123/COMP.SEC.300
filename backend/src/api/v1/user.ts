@@ -9,7 +9,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
   fastify.get<{ Params: ReqParams }>('/user/:id', {}, async (req, res) => {
     try {
       const user = await userRepository.findOneByOrFail({ id: req.params.id });
-      res.send(user);
+      res.send(user.toJSON());
     } catch (err) {
       res.code(404).send({ error: 'Not found' });
     }

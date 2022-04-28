@@ -9,13 +9,16 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 3. Run `npm install` to install dependencies
 4. Run `npm start` to run the app with `ts-node`
 
-## Features
+## Features related secure programming
 
-- use [recommended](https://github.com/tsconfig/bases/blob/main/bases/node17.json) tsconfig for node17
 - use [TypeORM](https://typeorm.io) object-relational mapping tool
   - No need to write SQL queries manually -> some protection against SQL injections
   - No dependency to a single database provider
+- enforce strong password requirements
+- use uuids instead of sequential ids
+- validate incoming request bodies
 
 ## References
 
 - https://codahale.com/how-to-safely-store-a-password/
+- https://docs.microsoft.com/en-us/microsoft-365/admin/misc/password-policy-recommendations?view=o365-worldwide
