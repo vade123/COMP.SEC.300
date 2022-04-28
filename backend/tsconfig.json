@@ -5,6 +5,11 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "typeRoots": ["./typings", "./node_modules/@types/"]
+  },
+  "include": ["./src", "./typings"],
+  "ts-node": {
+    "transpileOnly": true
   }
 }

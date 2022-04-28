@@ -1,18 +1,14 @@
 import { FastifyInstance, FastifyPluginAsync, FastifyPluginOptions } from 'fastify';
 import bcrypt from 'bcrypt';
 import { userRepository } from '../../data-source';
-import { User } from '../../entity/User';
+import { IUser, User } from '../../entity/User';
 import Joi, { ObjectSchema } from 'joi';
 import passwordComplexity, { ComplexityOptions } from 'joi-password-complexity';
 import { FastifyRouteSchemaDef } from 'fastify/types/schema';
-import { useContainer } from 'typeorm';
 
-interface registerBody {
-  username: string;
+interface RegisterBody extends Omit<IUser, 'id'> {
   password: string;
   passwordConfirm: string;
-  email: string;
-  info: string;
 }
 
 interface loginBody {
@@ -30,7 +26,7 @@ const passwordOpts: ComplexityOptions = {
 };
 
 const validatorCompiler = ({ schema, method, url, httpPart }: FastifyRouteSchemaDef<ObjectSchema>) => {
-  return (data: registerBody) => Joi.assert(data, schema);
+  return (data: RegisterBody) => Joi.assert(data, schema);
 };
 
 const registerOpts = {
@@ -91,7 +87,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       res.code(401).send({ error: 'bad credentials' });
     }
 
-    const token = fastify.jwt.sign(user!.toJSON());
+    const token = fastify.jwt.sign(user?.toJSON()!);
     res.code(200).send({ token: token });
   });
 };

@@ -6,7 +6,18 @@ interface ReqParams {
 }
 
 const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
+  fastify.addHook('onRequest', async (req, res) => {
+    try {
+      await req.jwtVerify();
+    } catch (err) {
+      res.send(err);
+    }
+  });
+
   fastify.get<{ Params: ReqParams }>('/user/:id', {}, async (req, res) => {
+    if (req.user.id !== req.params.id && req.user.role !== 'admin') {
+      res.code(403).send({ error: 'forbidden' });
+    }
     try {
       const user = await userRepository.findOneByOrFail({ id: req.params.id });
       res.send(user.toJSON());

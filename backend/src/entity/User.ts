@@ -5,6 +5,13 @@ export enum Role {
   USER = 'user',
   ADMIN = 'admin',
 }
+export interface IUser {
+  id: string;
+  username: string;
+  email: string;
+  info: string;
+  role: string;
+}
 
 @Entity()
 export class User {
