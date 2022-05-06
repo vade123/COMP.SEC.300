@@ -99,7 +99,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
         sameSite: true,
       })
       .code(200)
-      .send();
+      .send({ username: user?.username, id: user?.id });
   });
 };
 
