@@ -87,7 +87,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       res.code(401).send({ error: 'bad credentials' });
     }
 
-    const token = fastify.jwt.sign(user?.toJSON()!);
+    const token = fastify.jwt.sign(user?.toJSON()!, { expiresIn: '1h' });
 
     await res.generateCsrf();
     res

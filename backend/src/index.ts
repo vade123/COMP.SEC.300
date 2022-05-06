@@ -15,7 +15,7 @@ AppDataSource.initialize()
     const server: FastifyInstance = fastify();
     server
       .register(cors, {
-        origin: ['http://localhost'],
+        origin: ['*'],
         methods: ['GET', 'POST'],
       })
       .register(cookie, { secret: SECRET })
