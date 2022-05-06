@@ -13,7 +13,7 @@ const SECRET = process.env.SECRET!;
 export const cookieOpts: CookieSerializeOptions = {
   domain: 'localhost',
   path: '/',
-  secure: true,
+  secure: false, // set to true when using HTTPS
   httpOnly: true,
   sameSite: true,
   signed: true,
