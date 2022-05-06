@@ -5,6 +5,7 @@ import { IUser, User } from '../../entity/User';
 import Joi, { ObjectSchema } from 'joi';
 import passwordComplexity, { ComplexityOptions } from 'joi-password-complexity';
 import { FastifyRouteSchemaDef } from 'fastify/types/schema';
+import { cookieOpts } from '../../index';
 
 interface RegisterBody extends Omit<IUser, 'id'> {
   password: string;
@@ -89,17 +90,8 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
 
     const token = fastify.jwt.sign(user?.toJSON()!, { expiresIn: '1h' });
 
-    await res.generateCsrf();
-    res
-      .setCookie('token', token, {
-        domain: 'localhost',
-        path: '/',
-        secure: false,
-        httpOnly: true,
-        sameSite: true,
-      })
-      .code(200)
-      .send({ username: user?.username, id: user?.id });
+    await res.generateCsrf(cookieOpts);
+    res.setCookie('token', token, cookieOpts).code(200).send({ username: user?.username, id: user?.id });
   });
 };
 

@@ -28,3 +28,4 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 - https://docs.microsoft.com/en-us/microsoft-365/admin/misc/password-policy-recommendations?view=o365-worldwide
 - https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html
 - https://owasp.org/www-project-top-ten/
+- https://github.com/fastify/fastify-cookie#securing-the-cookie

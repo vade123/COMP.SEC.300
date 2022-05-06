@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import fastify, { FastifyInstance } from 'fastify';
 import jwt from '@fastify/jwt';
-import cookie from '@fastify/cookie';
+import cookie, { CookieSerializeOptions } from '@fastify/cookie';
 import cors from '@fastify/cors';
 import csrf from 'fastify-csrf';
 import helmet from '@fastify/helmet';
@@ -10,21 +10,30 @@ import routes from './api/v1';
 
 const SECRET = process.env.SECRET!;
 
+export const cookieOpts: CookieSerializeOptions = {
+  domain: 'localhost',
+  path: '/',
+  secure: true,
+  httpOnly: true,
+  sameSite: true,
+  signed: true,
+};
+
 AppDataSource.initialize()
   .then(async () => {
     const server: FastifyInstance = fastify();
     server
       .register(cors, {
         origin: ['*'],
-        methods: ['GET', 'POST'],
+        methods: ['GET', 'POST', 'PUT'],
       })
       .register(cookie, { secret: SECRET })
-      .register(csrf, { cookieOpts: { signed: true } })
+      .register(csrf, { cookieOpts })
       .register(jwt, {
         secret: SECRET,
         cookie: {
           cookieName: 'token',
-          signed: false,
+          signed: true,
         },
       })
       .register(helmet)
