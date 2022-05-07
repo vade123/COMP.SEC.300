@@ -3,9 +3,8 @@ import { userRepository } from '../../data-source';
 import { updateOpts } from '../../utils/validators';
 import bcrypt from 'bcrypt';
 import { IUser, Role } from '../../entity/User';
-import { cookieOpts } from '../..';
 
-interface GetParams {
+interface Params {
   Params: {
     id: string;
   };
@@ -16,7 +15,7 @@ interface UpdateBody extends IUser {
   passwordConfirm: string;
 }
 
-interface PutParams extends GetParams {
+interface ParamsAndBody extends Params {
   Body: UpdateBody;
 }
 
@@ -31,13 +30,13 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       }
     })
     //.addHook('onRequest', fastify.csrfProtection) //TODO: validating csrf token fails, figure out why
-    .addHook('preValidation', (req: FastifyRequest<GetParams>, res, done) => {
+    .addHook('preValidation', (req: FastifyRequest<Params>, res, done) => {
       if (req.user.id !== req.params.id && req.user.role !== Role.ADMIN) {
         res.code(403).send({ error: 'forbidden' });
       }
       done();
     })
-    .addHook('preHandler', async (req: FastifyRequest<GetParams>, res) => {
+    .addHook('preHandler', async (req: FastifyRequest<Params>, res) => {
       try {
         const user = await userRepository.findOneByOrFail({ id: req.params.id });
         req.userFromDb = user;
@@ -45,11 +44,11 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
         res.code(404).send({ error: 'Not found' });
       }
     })
-    .get<GetParams>('/user/:id', {}, async (req, res) => {
+    .get<Params>('/user/:id', {}, async (req, res) => {
       res.send(req.userFromDb);
     })
     //@ts-ignore Joi.ObjectSchema and FastifySchema do not match -> problem with Fastify typing, ignore
-    .put<PutParams>('/user/:id', updateOpts, async (req, res) => {
+    .put<ParamsAndBody>('/user/:id', updateOpts, async (req, res) => {
       const isAdmin = req.user.role === Role.ADMIN;
       const user = req.userFromDb;
 
@@ -73,7 +72,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       const updatedUser = await userRepository.save(user);
       res.code(200).send(updatedUser);
     })
-    .delete<GetParams>('/user/:id', {}, async (req, res) => {
+    .delete<Params>('/user/:id', {}, async (req, res) => {
       await userRepository.delete(req.params.id);
       res.clearCookie('token').code(204).send();
     });
