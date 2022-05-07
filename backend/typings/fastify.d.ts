@@ -1,7 +1,8 @@
 import fastify from 'fastify';
+import { User } from '../src/entity/User';
 
 declare module 'fastify' {
-  interface FastifyInstance<HttpServer = Server, HttpRequest = IncomingMessage, HttpResponse = ServerResponse> {
-    userFromDb: any;
+  interface FastifyRequest {
+    userFromDb: User;
   }
 }
