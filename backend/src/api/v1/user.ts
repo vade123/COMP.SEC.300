@@ -72,6 +72,10 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       }
       const updatedUser = await userRepository.save(user);
       res.code(200).send(updatedUser);
+    })
+    .delete<GetParams>('/user/:id', {}, async (req, res) => {
+      await userRepository.delete(req.params.id);
+      res.clearCookie('token').code(204).send();
     });
 };
 
