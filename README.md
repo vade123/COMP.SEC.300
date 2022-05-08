@@ -2,12 +2,17 @@
 
 Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
 
+## Requirements
+
+- [Nodejs](https://nodejs.org/en/) atleast `v17.8.0`
+- [Docker](https://www.docker.com/) for easily running the database (not strictly required)
+
 ## Getting started
 
 1. Start MariaDB with desired configs, for example: `$ docker run -d --name compsec300-db -e MARIADB_USER=user -e MARIADB_PASSWORD=pw123 -e MARIADB_ROOT_PASSWORD=my-secret-pw -e MARIADB_DATABASE=compsec300-db -p 3306:3306 mariadb:latest`
-2. Create `.env`-file from `.env.example` by adding database config for the just created database
-3. Run `npm install` to install dependencies
-4. Run `npm start` to run the app with `ts-node`
+2. Create `.env`-file from `.env.example` by adding database config for the just created database and other desired configurations
+3. Run `npm install` in `backend/` folder to install dependencies
+4. Run `npm start` in `backend/` folder to run the app with [ts-node](https://www.npmjs.com/package/ts-node)
 
 ## Features related secure programming
 
@@ -16,11 +21,11 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming
   - No dependency to a single database provider
 - enforce strong password requirements
 - use uuids instead of sequential ids
-- validate incoming request bodies
+- validate incoming request bodies using [Joi](https://joi.dev/)
 - store token in httpOnly cookie
-- cors configuration
-- use csrf token
-- use helmet for security headers
+- [cors configuration](https://github.com/fastify/fastify-cors)
+- use [csrf protection](https://github.com/fastify/fastify-csrf)
+- use [Helmet](https://github.com/fastify/fastify-helmet) for security headers
 
 ## References
 

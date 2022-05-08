@@ -24,7 +24,7 @@ const registerOpts = {
         password: passwordComplexity(passwordOpts).required(),
         passwordConfirm: Joi.ref('password'),
         email: Joi.string().email().required(),
-        info: Joi.string(),
+        info: Joi.string().empty(''),
       })
       .with('password', 'passwordConfirm')
       .required(),
@@ -41,7 +41,7 @@ const updateOpts = {
         password: passwordComplexity(passwordOpts),
         passwordConfirm: Joi.ref('password'),
         email: Joi.string().email().required(),
-        info: Joi.string(),
+        info: Joi.string().empty(''),
         role: Joi.string(),
       })
       .with('password', 'passwordConfirm')

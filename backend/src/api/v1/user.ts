@@ -3,6 +3,7 @@ import { userRepository } from '../../data-source';
 import { updateOpts } from '../../utils/validators';
 import bcrypt from 'bcrypt';
 import { IUser, Role } from '../../entity/User';
+import { request } from 'http';
 
 interface Params {
   Params: {
@@ -22,29 +23,38 @@ interface ParamsAndBody extends Params {
 const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyPluginOptions) => {
   fastify
     .decorateRequest('userFromDb', null)
+    .decorateRequest('isAdmin', false)
     .addHook('onRequest', async (req, res) => {
       try {
         await req.jwtVerify();
+        const user = await userRepository.findOneByOrFail({ id: req.user.id });
+        req.isAdmin = user.role === Role.ADMIN;
       } catch (err) {
         res.send(err);
       }
     })
     //.addHook('onRequest', fastify.csrfProtection) //TODO: validating csrf token fails, figure out why
     .addHook('preValidation', (req: FastifyRequest<Params>, res, done) => {
-      if (req.user.id !== req.params.id && req.user.role !== Role.ADMIN) {
+      if (req.user.id !== req.params.id && !req.isAdmin) {
         res.code(403).send({ error: 'forbidden' });
       }
       done();
     })
     .addHook('preHandler', async (req: FastifyRequest<Params>, res) => {
       try {
-        const user = await userRepository.findOneByOrFail({ id: req.params.id });
-        req.userFromDb = user;
+        if (req.params.id !== 'all') {
+          const user = await userRepository.findOneByOrFail({ id: req.params.id });
+          req.userFromDb = user;
+        }
       } catch (err) {
         res.code(404).send({ error: 'Not found' });
       }
     })
     .get<Params>('/user/:id', {}, async (req, res) => {
+      if (req.params.id === 'all' && req.isAdmin) {
+        const allUsers = await userRepository.find();
+        res.send(allUsers);
+      }
       res.send(req.userFromDb);
     })
     //@ts-ignore Joi.ObjectSchema and FastifySchema do not match -> problem with Fastify typing, ignore
