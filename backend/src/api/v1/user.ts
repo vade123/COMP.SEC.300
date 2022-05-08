@@ -3,7 +3,6 @@ import { userRepository } from '../../data-source';
 import { updateOpts } from '../../utils/validators';
 import bcrypt from 'bcrypt';
 import { IUser, Role } from '../../entity/User';
-import { request } from 'http';
 
 interface Params {
   Params: {
@@ -84,7 +83,10 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     })
     .delete<Params>('/user/:id', {}, async (req, res) => {
       await userRepository.delete(req.params.id);
-      res.clearCookie('token').code(204).send();
+      if (req.params.id === req.user.id) {
+        res.clearCookie('token');
+      }
+      res.code(204).send();
     });
 };
 
