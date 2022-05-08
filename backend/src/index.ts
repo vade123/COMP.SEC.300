@@ -50,7 +50,7 @@ AppDataSource.initialize()
       .get('/health', {}, async () => {
         return 'ok\n';
       })
-      .listen(process.env.PORT!, (err, address) => {
+      .listen(process.env.PORT ?? 8080, (err, address) => {
         if (err) {
           console.error(err);
           process.exit(1);

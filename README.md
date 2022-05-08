@@ -14,6 +14,8 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming. Simple CRU
 3. Run `npm install` in `backend/` folder to install dependencies
 4. Run `npm start` in `backend/` folder to run the app with [ts-node](https://www.npmjs.com/package/ts-node)
 
+See `http://localhost:8080/api/v1/documentation` for API documentation
+
 ## Features related secure programming
 
 - use [TypeORM](https://typeorm.io) object-relational mapping tool
