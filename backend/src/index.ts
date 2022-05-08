@@ -25,7 +25,7 @@ AppDataSource.initialize()
     server
       .register(cors, {
         origin: ['*'],
-        methods: ['GET', 'POST', 'PUT'],
+        methods: ['GET', 'POST', 'PUT', 'DELETE'],
       })
       .register(cookie, { secret: SECRET })
       .register(csrf, { cookieOpts })
@@ -36,7 +36,16 @@ AppDataSource.initialize()
           signed: true,
         },
       })
-      .register(helmet)
+      .register(helmet, {
+        contentSecurityPolicy: {
+          directives: {
+            defaultSrc: [`'self'`],
+            styleSrc: [`'self'`, `'unsafe-inline'`],
+            imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+            scriptSrc: [`'self'`, `https: 'unsafe-inline'`],
+          },
+        },
+      })
       .register(routes, { prefix: '/api/v1' })
       .get('/health', {}, async () => {
         return 'ok\n';

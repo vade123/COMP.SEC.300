@@ -20,7 +20,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
   fastify.post<{ Body: RegisterBody }>('/register', registerOpts, async (req, res) => {
     const userExists = await userRepository.findOneBy({ username: req.body.username });
     if (userExists) {
-      res.code(400).send({ error: 'username already taken' });
+      res.code(400).send({ statusCode: 400, error: 'Bad request', message: 'Username already taken' });
     }
 
     const hash = await bcrypt.hash(req.body.password, 10);
@@ -42,7 +42,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     const passwordCorrect = !user ? false : await bcrypt.compare(req.body.password, user.passwordHash);
 
     if (!(user && passwordCorrect)) {
-      res.code(401).send({ error: 'bad credentials' });
+      res.code(401).send({ statusCode: 401, error: 'Unauthorized', message: 'Bad credentials' });
     }
 
     const token = fastify.jwt.sign(user?.toJSON()!, { expiresIn: '1h' });

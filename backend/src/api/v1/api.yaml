@@ -1,0 +1,244 @@
+openapi: 3.0.0
+info:
+  title: COMP.SEC.300 Exercise work
+  description: Simple CRUD API with authentication for managing users
+  version: v1
+tags:
+  - name: auth
+    description: Authentication-related endpoints, do not require authentication
+  - name: user
+    description: User endpoints, requires authentication and sufficient role
+paths:
+  /login:
+    post:
+      tags: [auth]
+      description: Login in with credentials
+      requestBody:
+        description: User credentials to log in with
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserLogin'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccess'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '500':
+          description: 'Internal Server Error (most probable cause: validation failed)'
+  /register:
+    post:
+      tags: [auth]
+      description: Register a new user
+      requestBody:
+        description: New user details
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRegister'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '500':
+          description: 'Internal Server Error (most probable cause: validation failed)'
+  /user/all:
+    get:
+      tags: [user]
+      summary: Get all users
+      description: Admin-only endpoint
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '500':
+          description: Internal server error
+    parameters:
+      - name: token
+        in: cookie
+        required: true
+        schema:
+          type: string
+          example: JWT token
+      - name: _csrf
+        in: cookie
+        required: true
+        schema:
+          type: string
+          example: CSRF token
+  /user/{id}:
+    get:
+      tags: [user]
+      summary: Get a user
+      description: |
+        User: fetch ones own data\
+        Admin: fetch any users data
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: Internal server error
+    put:
+      tags: [user]
+      summary: Modify a user
+      description: |
+        User: modify ones own data\
+        Admin: modify any users data. Only admins can promote users to admins
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          description: Bad request
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+        '500':
+          description: 'Internal Server Error (most probable cause: validation failed)'
+    delete:
+      tags: [user]
+      summary: Delete a user
+      description: |
+        User: Delete ones own user\
+        Admin: Delete any user
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          description: Not Found
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          example: '7e1ef211-7c7a-4ec5-873e-6a02a732c70c'
+      - name: token
+        in: cookie
+        required: true
+        schema:
+          type: string
+          example: JWT token
+      - name: _csrf
+        in: cookie
+        required: true
+        schema:
+          type: string
+          example: CSRF token
+components:
+  schemas:
+    UserLogin:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+          example: 'testuser'
+        password:
+          type: string
+          example: 'strongPassword123!'
+    UserRegister:
+      type: object
+      required: [username, password, email, passwordConfirm]
+      properties:
+        username:
+          type: string
+          example: 'testuser'
+        password:
+          type: string
+          example: 'strongPassword123!'
+        passwordConfirm:
+          type: string
+          example: 'strongPassword123!'
+        email:
+          type: string
+          example: 'test@test.com'
+        info:
+          type: string
+          example: 'this is any arbitrary string'
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '7e1ef211-7c7a-4ec5-873e-6a02a732c70c'
+        username:
+          type: string
+          example: 'testuser'
+        role:
+          type: string
+          example: 'user'
+        info:
+          type: string
+          example: 'this is any arbitrary string'
+        email:
+          type: string
+          example: 'test@test.com'
+    LoginSuccess:
+      type: object
+      properties:
+        id:
+          type: string
+          example: '7e1ef211-7c7a-4ec5-873e-6a02a732c70c'
+        username:
+          type: string
+          example: 'testuser'
+    Error:
+      type: object
+      properties:
+        statusCode:
+          type: integer
+          example: 404
+        code:
+          type: string
+          example: 'ERR_EXAMPLE_CODE'
+        error:
+          type: string
+          example: 'Not found'
+        message:
+          type: string
+          example: 'Resource not found'

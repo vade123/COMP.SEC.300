@@ -35,7 +35,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     //.addHook('onRequest', fastify.csrfProtection) //TODO: validating csrf token fails, figure out why
     .addHook('preValidation', (req: FastifyRequest<Params>, res, done) => {
       if (req.user.id !== req.params.id && !req.isAdmin) {
-        res.code(403).send({ error: 'forbidden' });
+        res.code(403).send({ statusCode: 403, error: 'Forbidden', message: 'Operation forbidden' });
       }
       done();
     })
@@ -46,7 +46,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
           req.userFromDb = user;
         }
       } catch (err) {
-        res.code(404).send({ error: 'Not found' });
+        res.code(404).send({ statusCode: 404, error: 'Not Found', message: 'Resource not found' });
       }
     })
     .get<Params>('/user/:id', {}, async (req, res) => {
