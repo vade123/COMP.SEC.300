@@ -12,7 +12,7 @@ Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming. Simple CRU
 1. Start MariaDB with desired configs, for example: `$ docker run -d --name compsec300-db -e MARIADB_USER=user -e MARIADB_PASSWORD=pw123 -e MARIADB_ROOT_PASSWORD=my-secret-pw -e MARIADB_DATABASE=compsec300-db -p 3306:3306 mariadb:latest`
 2. Create `.env`-file from `.env.example` by adding database config for the just created database and other desired configurations
 3. Run `npm install` in `backend/` folder to install dependencies
-4. Run `npm start` in `backend/` folder to run the app with [ts-node](https://www.npmjs.com/package/ts-node)
+4. Run `npm start` (or `npm run watch` to watch for changes) in `backend/` folder to run the app with [ts-node](https://www.npmjs.com/package/ts-node)
 
 See `http://localhost:8080/api/v1/documentation` for API documentation
 
@@ -33,10 +33,13 @@ See `http://localhost:8080/api/v1/documentation` for API documentation
 - use [csrf protection](https://github.com/fastify/fastify-csrf)
 - use [Helmet](https://github.com/fastify/fastify-helmet) for security headers
   - otherwise use recommended defaults (i.e. everything enabled), but configure swagger to work
+- global rate limiting, 50 requests in 1 minute, including 404 messages (one can't fish for URLs)
 
 ## Testing
 
 Lots of manual testing using [postman](https://www.postman.com/).
+
+TODO: automated test collection with postman
 
 ## References
 
@@ -58,3 +61,6 @@ Some references used in this work, not an exhaustive list:
 - Refresh token flow, currently only access token is implemented
 - CSRF token should be generated before any other requests, currently generated at login
 - Admins have power to do basically anything, which is not very feasible and also probably not GDPR-safe
+- Application should be refactored, atleast separate business logic from api implementation to a separate service
+  - would allow for more future-proof solution and make unit testing a lot easier
+- Captcha
