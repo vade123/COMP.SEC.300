@@ -5,6 +5,7 @@ import cookie, { CookieSerializeOptions } from '@fastify/cookie';
 import cors from '@fastify/cors';
 import csrf from 'fastify-csrf';
 import helmet from '@fastify/helmet';
+import rateLimit from '@fastify/rate-limit';
 import { AppDataSource } from './data-source';
 import routes from './api/v1';
 
@@ -22,11 +23,12 @@ export const cookieOpts: CookieSerializeOptions = {
 AppDataSource.initialize()
   .then(async () => {
     const server: FastifyInstance = fastify();
-    server
+    await server
       .register(cors, {
         origin: ['*'],
         methods: ['GET', 'POST', 'PUT', 'DELETE'],
       })
+      .register(rateLimit, { global: true, max: 50, timeWindow: '1 minute' })
       .register(cookie, { secret: SECRET })
       .register(csrf, { cookieOpts })
       .register(jwt, {
@@ -46,10 +48,12 @@ AppDataSource.initialize()
           },
         },
       })
-      .register(routes, { prefix: '/api/v1' })
-      .get('/health', {}, async () => {
-        return 'ok\n';
-      })
+      .register(routes, { prefix: '/api/v1' });
+
+    server
+      .setNotFoundHandler({ preHandler: server.rateLimit() }, (req, res) =>
+        res.code(404).send({ statusCode: 404, error: 'Not found', message: 'Not found' })
+      )
       .listen(process.env.PORT ?? 8080, (err, address) => {
         if (err) {
           console.error(err);
