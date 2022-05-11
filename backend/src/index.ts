@@ -51,9 +51,10 @@ AppDataSource.initialize()
       .register(routes, { prefix: '/api/v1' });
 
     server
-      .setNotFoundHandler({ preHandler: server.rateLimit() }, (req, res) =>
-        res.code(404).send({ statusCode: 404, error: 'Not found', message: 'Not found' })
-      )
+      .setNotFoundHandler({ preHandler: server.rateLimit() }, (req, res) => {
+        console.log(req.url);
+        res.code(404).send({ statusCode: 404, error: 'Not found', message: `Path "${req.url}" not found` });
+      })
       .listen(process.env.PORT ?? 8080, (err, address) => {
         if (err) {
           console.error(err);
