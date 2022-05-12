@@ -1,24 +1,37 @@
 # COMP.SEC.300 Secure Programming
 
-Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming. Simple CRUD API with authentication for managing users.
+Exercise work for Tampere Uni course COMP.SEC.300 Secure Programming. Simple CRUD API with authentication for managing users. This document doubles as the report required by the course.
 
 ## Requirements
 
 - [Nodejs](https://nodejs.org/en/) atleast `v17.8.0`
-- [MariaDB](https://mariadb.org/) recommended to run with docker, instuctions below
+- [MariaDB](https://mariadb.org/) recommended to run with Docker, instructions below
 
-### Good to have
+### Nice to have
 
 - [Docker](https://www.docker.com/) for easily running the database (not strictly required)
 
 ## Getting started
 
-1. Start MariaDB with desired configs, for example: `$ docker run -d --name compsec300-db -e MARIADB_USER=user -e MARIADB_PASSWORD=pw123 -e MARIADB_ROOT_PASSWORD=my-secret-pw -e MARIADB_DATABASE=compsec300-db -p 3306:3306 mariadb:latest`
+1. Start MariaDB with desired configs, for example: `$ docker run -d --name compsec300-db -e MARIADB_USER=dbuser -e MARIADB_PASSWORD=dbpassword -e MARIADB_ROOT_PASSWORD=my-secret-pw -e MARIADB_DATABASE=compsec300-db -p 3306:3306 mariadb:latest`
 2. Create `.env`-file from `.env.example` by adding database config for the just created database and other desired configurations
 3. Run `npm install` in `backend/` folder to install dependencies
 4. Run `npm start` (or `npm run watch` to watch for changes) in `backend/` folder to run the app with [ts-node](https://www.npmjs.com/package/ts-node)
 
 See `http://localhost:8080/api/v1/documentation` for API documentation
+
+### Environment variables
+
+| Name           | Description                                            | Example value       |
+| -------------- | ------------------------------------------------------ | ------------------- |
+| PORT           | Port of the application                                | 8080                |
+| DB_HOST        | Host of the database                                   | localhost           |
+| DB_PORT        | Port of the database                                   | 3306                |
+| DB_NAME        | Name of the database                                   | compsec300-db       |
+| DB_USER        | Name of the database user                              | dbuser              |
+| DB_PASSWORD    | Password of the database user                          | dbpassword          |
+| JWT_SECRET     | Secret for JWTs                                        | this-is-some-secret |
+| ADMIN_PASSWORD | Password for the default admin user of the application | adminPassword!12    |
 
 ## Features related to secure programming
 

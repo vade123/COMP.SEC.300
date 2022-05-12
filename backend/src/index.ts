@@ -9,11 +9,14 @@ import rateLimit from '@fastify/rate-limit';
 import { AppDataSource } from './data-source';
 import routes from './api/v1';
 import { cookieOpts } from './utils/cookieOpts';
+import { initAdmin } from './utils/initAdmin';
 
 const SECRET = process.env.SECRET!;
 
 AppDataSource.initialize()
   .then(async () => {
+    initAdmin();
+
     const server: FastifyInstance = fastify();
     await server
       .register(cors, {
