@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import { userRepository } from '../../data-source';
 import { IUser, User } from '../../entity/User';
 import { registerOpts, loginOpts } from '../../utils/validators';
-import { cookieOpts } from '../../index';
+import { cookieOpts } from '../../utils/cookieOpts';
 
 export interface RegisterBody extends Omit<IUser, 'id'> {
   password: string;
@@ -45,7 +45,7 @@ const auth: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       res.code(401).send({ statusCode: 401, error: 'Unauthorized', message: 'Bad credentials' });
     }
 
-    const token = fastify.jwt.sign(user?.toJSON()!, { expiresIn: '1h' });
+    const token = fastify.jwt.sign(user!.toJSON(), { expiresIn: '1h' });
 
     await res.generateCsrf(cookieOpts);
     res.setCookie('token', token, cookieOpts).code(200).send({ username: user?.username, id: user?.id });

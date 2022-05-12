@@ -1,24 +1,16 @@
 import 'dotenv/config';
 import fastify, { FastifyInstance } from 'fastify';
 import jwt from '@fastify/jwt';
-import cookie, { CookieSerializeOptions } from '@fastify/cookie';
+import cookie from '@fastify/cookie';
 import cors from '@fastify/cors';
 import csrf from 'fastify-csrf';
 import helmet from '@fastify/helmet';
 import rateLimit from '@fastify/rate-limit';
 import { AppDataSource } from './data-source';
 import routes from './api/v1';
+import { cookieOpts } from './utils/cookieOpts';
 
 const SECRET = process.env.SECRET!;
-
-export const cookieOpts: CookieSerializeOptions = {
-  domain: 'localhost',
-  path: '/',
-  secure: false, // set to true when using HTTPS
-  httpOnly: true,
-  sameSite: true,
-  signed: true,
-};
 
 AppDataSource.initialize()
   .then(async () => {

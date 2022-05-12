@@ -8,7 +8,7 @@ const validatorCompiler = ({ schema, method, url, httpPart }: FastifyRouteSchema
 };
 
 const passwordOpts: ComplexityOptions = {
-  min: parseInt(process.env.PASSWORD_MIN_LENGTH!),
+  min: 10,
   max: 40,
   lowerCase: 1,
   upperCase: 1,

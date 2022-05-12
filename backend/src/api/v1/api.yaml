@@ -99,9 +99,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
         '401':
           description: Unauthorized
         '403':
@@ -116,15 +114,19 @@ paths:
       description: |
         User: modify ones own data\
         Admin: modify any users data. Only admins can promote users to admins
+      requestBody:
+        description: Modified user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserModify'
       responses:
         '200':
           description: OK
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/User'
         '400':
           description: Bad request
         '401':
@@ -185,6 +187,28 @@ components:
       type: object
       required: [username, password, email, passwordConfirm]
       properties:
+        username:
+          type: string
+          example: 'testuser'
+        password:
+          type: string
+          example: 'strongPassword123!'
+        passwordConfirm:
+          type: string
+          example: 'strongPassword123!'
+        email:
+          type: string
+          example: 'test@test.com'
+        info:
+          type: string
+          example: 'this is any arbitrary string'
+    UserModify:
+      type: object
+      required: [id, username, password, email, passwordConfirm]
+      properties:
+        id:
+          type: string
+          example: '7e1ef211-7c7a-4ec5-873e-6a02a732c70c'
         username:
           type: string
           example: 'testuser'

@@ -23,6 +23,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
   fastify
     .decorateRequest('userFromDb', null)
     .decorateRequest('isAdmin', false)
+    //.addHook('onRequest', fastify.csrfProtection) //TODO: validating csrf token fails
     .addHook('onRequest', async (req, res) => {
       try {
         await req.jwtVerify();
@@ -32,7 +33,6 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
         res.send(err);
       }
     })
-    //.addHook('onRequest', fastify.csrfProtection) //TODO: validating csrf token fails, figure out why
     .addHook('preValidation', (req: FastifyRequest<Params>, res, done) => {
       if (req.user.id !== req.params.id && !req.isAdmin) {
         res.code(403).send({ statusCode: 403, error: 'Forbidden', message: 'Operation forbidden' });
@@ -58,7 +58,6 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
     })
     //@ts-ignore Joi.ObjectSchema and FastifySchema do not match -> problem with Fastify typing, ignore
     .put<ParamsAndBody>('/user/:id', updateOpts, async (req, res) => {
-      const isAdmin = req.user.role === Role.ADMIN;
       const user = req.userFromDb;
 
       user.email = req.body.email;
@@ -66,7 +65,7 @@ const user: FastifyPluginAsync = async (fastify: FastifyInstance, opts: FastifyP
       user.info = req.body.info;
 
       // Only admin can elevate other users to admin.
-      if (isAdmin) {
+      if (req.isAdmin) {
         user.role = req.body.role === 'admin' ? Role.ADMIN : Role.USER;
       }
 
