@@ -45,7 +45,7 @@ See `http://localhost:8080/api/v1/documentation` for API documentation
   - impossible to deduct anything from the id
 - validate incoming request bodies using [Joi](https://joi.dev/)
 - enforce strong password requirements with Joi
-- store jwt token in httpOnly cookie, expire token in 1h
+- store jwt token in httpOnly cookie, expire token in 1h, sign the token with HS256 algorithm
 - use secure and signed cookies
 - [cors configuration](https://github.com/fastify/fastify-cors)
 - use [csrf protection](https://github.com/fastify/fastify-csrf)
@@ -53,12 +53,41 @@ See `http://localhost:8080/api/v1/documentation` for API documentation
 - use [Helmet](https://github.com/fastify/fastify-helmet) for security headers
   - otherwise use recommended defaults (i.e. everything enabled), but configure swagger to work
 - global rate limiting, 50 requests in 1 minute, including 404 messages (one can't fish for URLs)
+- use linting ([ESLint](https://eslint.org)), formatting ([Prettier](https://prettier.io/)) and a typed language ([TypeScript](https://www.typescriptlang.org)) to enforce good coding style and therefore reduce the risk of making programming errors and introducing bugs which may be exploited
+
+In addition to these more explicit features, more vague secure related programming conventions were also used. These included vetting the used dependencies (of course reading through the source code of each depedency is not feasible, but using the dependencies with common sense), using as few dependencies as possible and following good coding conventions. Multiple references were used to guide the implementation, some of which are linked down below.
+
+## Structure of the program
+
+The source code of the program is divided into few different directories and files.
+
+- `api/v1`
+  API implementation version 1. Includes the OpenAPI 3 desciption of the API in `api.yaml` file. Authentication-related endpoints and their business logic in `auth.ts`, User-related endpoints and their business logic in `user.ts`. Both are implemented as Fastify Plugins, which are registered into use in `index.ts` in the same directory.
+
+- `entity`
+  Contains TypeORM entities of the program, each one representing a single SQL table. Currently the program only has one entity, User.
+
+- `utils`
+  Contains miscellaneous utility functions used throughout the program.
+
+  - `cookieOpts.ts`
+    Cookie options used in all cookies set by the program.
+  - `initAdmin.ts`
+    Contains a function used in initializing an admin user for the program, with the password given as an environment variable. Initializing the admin is skipped if it already exists.
+  - `validators.ts`
+    Contains validator options used in validating incoming requests.
+
+- `data-source.ts`
+  Contains TypeORM data source initialization, i.e. database connection.
+
+- `index.ts`
+  Entrypoint of the program. Connects to database and registers most of the security related Fastify plugins, route plugins and listens to the given port.
+
+In addition to the source code, the repository contains configurations for `ESLint` (linter) and `Prettier` (formatter).
 
 ## Testing
 
-Lots of manual testing using [postman](https://www.postman.com/). Manual testing verified that the program generally works as expected. It also revealed that validating CSRF tokens fails, which is yet to be fixed.
-
-TODO: automated test collection with postman
+Lots of manual testing using [postman](https://www.postman.com/). Manual testing was basically calling the API with both valid and invalid requests and observing what happened. Manual testing verified that the program generally works as expected. It also revealed that validating CSRF tokens fails, which is yet to be fixed.
 
 ## Open issues / further development
 
@@ -72,10 +101,11 @@ TODO: automated test collection with postman
 - Admins have power to do basically anything, which is not very feasible and also probably not GDPR-safe
 - Application should be refactored, atleast separate business logic from api implementation to a separate service
   - would allow for more future-proof solution and make unit testing a lot easier
-- captcha
+- captcha (would of course also require a front end where to display it)
 - reverse proxy, either implement manually (e.g. nginx) or use some cloud provider service (load balancer / api management)
-- https (local setup)
-- stricter typing / validating
+- https (local setup / cloud platform)
+- stricter typing and validating
+- automated testing, both unit testing and API testing
 
 ## References
 
